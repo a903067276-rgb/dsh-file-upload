@@ -69,7 +69,7 @@ listener() {
 
   # ---- 4. 等健康（最多 60 秒，200 即成功）----
   code=""
-  for _ in $(seq 1 30); do
+  for _ in $(seq 1 60); do
     code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 3 "http://127.0.0.1:$PORT/" 2>/dev/null || true)
     [ "$code" = "200" ] && break
     sleep 2
