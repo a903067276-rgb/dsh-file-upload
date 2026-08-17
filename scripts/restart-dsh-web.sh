@@ -26,7 +26,7 @@ WEBLOG=/tmp/dsh-web.log
 # ---- 0. 自我 detached：未 detach 时先转入后台，调用方立即返回 ----
 if [ "${RESTART_DETACHED:-}" != "1" ]; then
   RESTART_DETACHED=1 nohup bash "$0" "$@" > /dev/null 2>&1 &
-  echo "==> 重启已在后台进行（detached），日志: $LOG；约 10~30 秒后服务恢复，浏览器自动重连"
+  echo "==> 重启已在后台进行（detached），日志: ${LOG}；约 10~30 秒后服务恢复，浏览器自动重连"
   exit 0
 fi
 
