@@ -89,6 +89,11 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 | Linux | ✅ 架构上可用（纯 Node 实现），未实测 |
 | Windows | ⚠️ 架构上可用（纯 Node 实现；文件名净化已兼容 Windows 非法字符，路径跟随平台分隔符），未实测 |
 
+## 环境要求
+
+- DSH web（`dsh web` 运行）
+- 无需额外 shell/命令：host 半为纯 Node 实现（`node:fs`），全平台无系统命令依赖
+
 ## 其他说明
 
 - `uploads/` 目录只增不减，**不会自动清理**（不擅自删用户文件），需要时手动删除。

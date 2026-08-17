@@ -60,6 +60,12 @@ plus a **single entry** in `~/.dsh/cordis.patch.yml`, then restart.
 | Linux | ✅ expected to work (pure Node implementation), untested |
 | Windows | ⚠️ expected to work (pure Node implementation, Windows-safe filename sanitization, platform separator paths), untested |
 
+## Requirements
+
+- DSH web (run with `dsh web`)
+- No extra shell needed: the host half is pure Node (`node:fs`), no system commands
+  required on any platform.
+
 ## How it works
 
 - **Host** (`lib/index.js`): one route `POST /api/file-upload/save` — validates the session
