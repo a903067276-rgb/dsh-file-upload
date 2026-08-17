@@ -1,0 +1,50 @@
+{
+  "name": "dsh-file-upload",
+  "version": "0.1.0",
+  "description": "Upload button + drag-and-drop files into DSH conversation as local paths (works with any vision plugin)",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml"
+  ],
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "file-upload",
+    "drag-drop",
+    "vision",
+    "web-ui"
+  ],
+  "license": "MIT",
+  "engines": {
+    "dsh": ">=0.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/a903067276-rgb/dsh-file-upload.git"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-api-remotes",
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ],
+      "platform": "web"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1-rc.1"
+  }
+}
