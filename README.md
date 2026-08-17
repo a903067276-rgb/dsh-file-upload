@@ -17,6 +17,13 @@ it works with dsh-vision's `view_image`, any other model/tool that can read loca
 no vision at all. It bypasses DSH's native "the current model does not support images"
 rejection because no image block is ever submitted.
 
+## Screenshot
+
+![dsh-file-upload in action](assets/screenshot.png)
+
+The 📎 upload button in the composer tool row; the picked file's path (blurred in the
+screenshot) is inserted into the input box automatically, ready to send.
+
 ## Features
 
 | Action | Effect |
