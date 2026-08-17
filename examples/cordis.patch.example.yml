@@ -1,0 +1,14 @@
+# dsh-file-upload 手动挂载示例（兜底安装路径，仅在没有 `dsh plugin` 命令的环境使用）
+#
+# 追加到 ~/.dsh/cordis.patch.yml 的 insert 列表。
+# 注意：本插件单 entry 包名挂载即可（host apply 与 clientModules 都走包加载）——
+# 不要双 entry，双 entry 会让本插件 apply 两次，
+# /api/file-upload/save 路由重复注册崩溃。
+# 需要先让包名可解析（npm 全局安装的 dsh）：
+#   ln -s <repo> ~/.dsh/profiles/web/node_modules/dsh-file-upload
+# 官方 bundle 安装（`dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"`）
+# 使用仓库根的 cordis.patch.yml，无需本示例。两种方式二选一，详见 docs/install.md。
+
+- insert:
+    - id: file-upload
+      name: 'dsh-file-upload'

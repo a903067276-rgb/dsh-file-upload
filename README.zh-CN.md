@@ -1,5 +1,9 @@
 # dsh-file-upload 📎
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
+![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+
 **统一上传按钮 + 拖拽文件直进对话** —— DeepSeek Harness（DSH）web 插件。
 
 点击输入框左侧的「📎 上传」按钮选择文件，或直接把文件拖进窗口：文件保存到
@@ -40,13 +44,16 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 
 ### 方式二：手动挂载（本地开发，macOS 实测）
 
+完整步骤（含验证、卸载、注意事项）见 [docs/install.md](docs/install.md)。概要：
+
 1. 让 web profile 能按包名解析到本仓库：
 
    ```bash
    ln -s ~/Documents/DSH/plugin-dev/dsh-file-upload ~/.dsh/profiles/web/node_modules/dsh-file-upload
    ```
 
-2. 在 `~/.dsh/cordis.patch.yml` 追加单 entry（本仓库 `cordis.patch.yml` 内容）：
+2. 在 `~/.dsh/cordis.patch.yml` 追加单 entry（示例见
+   [`examples/cordis.patch.example.yml`](examples/cordis.patch.example.yml)）：
 
    ```yaml
    - insert:
@@ -72,6 +79,7 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
   按钮（与默认「+」命令按钮区分）；document **捕获阶段**监听拖拽，先于官方
   InputBar 的冒泡监听执行，`preventDefault + stopPropagation` 接管文件拖放；
   `FileReader` 读 base64 上传，完成后路径文本插入输入框草稿（保留已有内容）。
+- **错误边界**：渲染崩溃只降级为"⚠ 上传组件异常"小字，不会让整个输入框消失。
 
 ## 平台支持
 
