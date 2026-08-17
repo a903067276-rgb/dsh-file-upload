@@ -25,8 +25,14 @@ WAIT="${DSH_WAIT_SECONDS:-30}"
 mkdir -p "$LOG_DIR"
 
 # ---- 1. 优雅停止现有 dsh web 进程 ----
-# 精确匹配 node .../dsh web（不含 headless 等其他 profile）
-PID="$(pgrep -f 'node .*/dsh web' | head -1 || true)"
+# 按端口找监听进程（lsof 可靠）；pgrep 在受限 shell 中可能看不到宿主进程
+find_pid() {
+  lsof -t -iTCP:"$PORT" -sTCP:LISTEN 2>/dev/null | head -1 || true
+}
+PID="$(find_pid)"
+if [ -z "$PID" ]; then
+  PID="$(pgrep -f 'node .*/dsh web' | head -1 || true)"
+fi
 if [ -n "$PID" ]; then
   echo "==> 优雅停止 dsh web (pid $PID)"
   kill -TERM "$PID" 2>/dev/null || true
@@ -46,11 +52,17 @@ echo "==> 启动 dsh web (port $PORT)"
 nohup "$DSH_BIN" web --port "$PORT" >> "$LOG_FILE" 2>&1 &
 NEW_PID=$!
 
-# ---- 3. 健康检查：等 HTTP 就绪 ----
+# ---- 3. 健康检查：等新进程独占端口（避免旧进程未杀净时误判）----
 for _ in $(seq 1 "$WAIT"); do
-  if curl -sf -o /dev/null "http://127.0.0.1:$PORT" 2>/dev/null; then
+  OWNER="$(find_pid)"
+  if [ -n "$OWNER" ] && [ "$OWNER" = "$NEW_PID" ]; then
     echo "==> dsh web 已就绪: http://127.0.0.1:$PORT (pid $NEW_PID)"
     exit 0
+  fi
+  # 新进程已死且端口仍被其他进程占用 → 提前报错
+  if ! kill -0 "$NEW_PID" 2>/dev/null && [ -n "$OWNER" ]; then
+    echo "!! 新实例已退出且端口被 pid $OWNER 占用，日志: $LOG_FILE" >&2
+    exit 1
   fi
   sleep 1
 done
