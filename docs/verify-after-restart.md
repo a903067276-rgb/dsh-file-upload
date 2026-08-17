@@ -36,3 +36,10 @@
    找；调用方先 nohup detached 再杀（借鉴 ~/.dsh/restart-self.sh）。
 4. **静态 bundle 插件验证节奏**：先动态 Cordis 插件热验证再落静态安装
    （全局规范已写死）。
+
+## 追加验证（2026-08-17 第二轮）
+
+- [x] 发送含路径消息不再崩溃（根因：dsh-file-mentions 的 processBarePaths 替换文本节点
+      与 React 冲突 → 已修：跳过 [data-conversation-scroll] 消息区，反引号路径不受影响）
+- [x] file-mentions 安装副本改为软链指向源码仓库（改代码立即生效）
+- [x] 重启脚本 detached 模式实测可用（改代码后自动重启不卡对话）
