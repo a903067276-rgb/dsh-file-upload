@@ -1,71 +1,66 @@
 #!/bin/bash
 # ============================================================
-# restart-dsh-web.sh — 自动重启 dsh web（插件安装/更新后使用）
+# restart-dsh-web.sh — 重启 dsh web：杀当前端口进程 → 等一会 → 重开
 #
-# 原则：优雅停止（SIGTERM → 等待会话落盘）→ 重新拉起 → 健康检查。
-# 会话数据持久化在 ~/.dsh/sessions/，重启后浏览器回到同一会话即可继续。
+# 浏览器无需刷新：DSH 客户端有断线自动重连（指数退避），
+# 页面短暂显示"重连中"，服务起来后自动恢复，当前会话/草稿不丢。
 #
 # 用法:
 #   ./scripts/restart-dsh-web.sh              # 默认端口 3080
 #   DSH_WEB_PORT=8080 ./scripts/restart-dsh-web.sh
-#
-# 可调环境变量:
-#   DSH_BIN         dsh 可执行文件路径（默认 /Users/xinbanzhuan/.npm-global/bin/dsh）
-#   DSH_WEB_PORT    监听端口（默认 3080）
-#   DSH_WAIT_SECONDS 停止/启动等待秒数（默认 30）
 # ============================================================
 set -euo pipefail
 
-DSH_BIN="${DSH_BIN:-/Users/xinbanzhuan/.npm-global/bin/dsh}"
-LOG_DIR="${DSH_LOG_DIR:-$HOME/.dsh/logs}"
-LOG_FILE="$LOG_DIR/dsh-web.log"
 PORT="${DSH_WEB_PORT:-3080}"
-WAIT="${DSH_WAIT_SECONDS:-30}"
+DSH_BIN="${DSH_BIN:-/Users/xinbanzhuan/.npm-global/bin/dsh}"
+LOG_FILE="${DSH_LOG_DIR:-$HOME/.dsh/logs}/dsh-web.log"
 
-mkdir -p "$LOG_DIR"
-
-# ---- 1. 优雅停止现有 dsh web 进程 ----
-# 按端口找监听进程（lsof 可靠）；pgrep 在受限 shell 中可能看不到宿主进程
 find_pid() {
   lsof -t -iTCP:"$PORT" -sTCP:LISTEN 2>/dev/null | head -1 || true
 }
+
+# ---- 1. 杀掉当前端口进程（先 SIGTERM 优雅退出，5 秒未退再强杀）----
 PID="$(find_pid)"
-if [ -z "$PID" ]; then
-  PID="$(pgrep -f 'node .*/dsh web' | head -1 || true)"
-fi
 if [ -n "$PID" ]; then
-  echo "==> 优雅停止 dsh web (pid $PID)"
+  echo "==> 停止 dsh web (pid $PID)"
   kill -TERM "$PID" 2>/dev/null || true
-  for _ in $(seq 1 "$WAIT"); do
+  for _ in $(seq 1 5); do
     if ! kill -0 "$PID" 2>/dev/null; then break; fi
     sleep 1
   done
   if kill -0 "$PID" 2>/dev/null; then
-    echo "==> 优雅停止超时（${WAIT}s），强制结束"
+    echo "==> 5 秒未退出，强制结束"
     kill -KILL "$PID" 2>/dev/null || true
     sleep 1
   fi
 fi
 
-# ---- 2. 重新拉起（后台 + 日志）----
+# ---- 2. 等端口完全释放 ----
+for _ in $(seq 1 10); do
+  if [ -z "$(find_pid)" ]; then break; fi
+  sleep 1
+done
+
+# ---- 3. 重开（后台 + 日志）----
 echo "==> 启动 dsh web (port $PORT)"
+mkdir -p "$(dirname "$LOG_FILE")"
 nohup "$DSH_BIN" web --port "$PORT" >> "$LOG_FILE" 2>&1 &
 NEW_PID=$!
 
-# ---- 3. 健康检查：等新进程独占端口（避免旧进程未杀净时误判）----
-for _ in $(seq 1 "$WAIT"); do
+# ---- 4. 等就绪（新进程独占端口）----
+for _ in $(seq 1 30); do
   OWNER="$(find_pid)"
-  if [ -n "$OWNER" ] && [ "$OWNER" = "$NEW_PID" ]; then
+  if [ "$OWNER" = "$NEW_PID" ]; then
     echo "==> dsh web 已就绪: http://127.0.0.1:$PORT (pid $NEW_PID)"
+    echo "==> 浏览器无需刷新，页面会自动重连"
     exit 0
   fi
-  # 新进程已死且端口仍被其他进程占用 → 提前报错
   if ! kill -0 "$NEW_PID" 2>/dev/null && [ -n "$OWNER" ]; then
-    echo "!! 新实例已退出且端口被 pid $OWNER 占用，日志: $LOG_FILE" >&2
+    echo "!! 新实例启动失败且端口仍被 pid $OWNER 占用，日志: $LOG_FILE" >&2
     exit 1
   fi
   sleep 1
 done
 
-echo "!! dsh web 启动失败（${WAIT} 秒内未就绪），日志: $LOG_FILE" >&2
+echo "!! dsh web 启动失败（30 秒内未就绪），日志: $LOG_FILE" >&2
 exit 1
