@@ -65,8 +65,9 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 ## 工作原理
 
 - **Host**（`lib/index.js`）：一条路由 `POST /api/file-upload/save` —— 接收
-  base64 文件内容，校验会话与大小，`mkdir -p uploads` 后用 `base64 -d`（stdin
-  输入）落盘到 `<会话项目>/uploads/`，返回绝对路径。
+  base64 文件内容，校验会话与大小，用**纯 Node**（`node:fs`，跨平台无系统命令
+  依赖）落盘到 `<会话项目>/uploads/`，路径由 `node:path` 生成、跟随平台分隔符，
+  返回绝对路径。
 - **Client**（`lib/client.js`）：`conversation.input.left` 插槽注册「📎 上传」
   按钮（与默认「+」命令按钮区分）；document **捕获阶段**监听拖拽，先于官方
   InputBar 的冒泡监听执行，`preventDefault + stopPropagation` 接管文件拖放；
@@ -76,9 +77,9 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 
 | 平台 | 状态 |
 |---|---|
-| macOS | ✅ 全功能实测 |
-| Linux | ⚠️ 架构上可用（`base64 -d` 同为自带命令），未实测 |
-| Windows | ❌ 未支持（依赖 `base64` 命令与 POSIX 路径） |
+| macOS | ✅ 全功能实测（开发环境） |
+| Linux | ✅ 架构上可用（纯 Node 实现），未实测 |
+| Windows | ⚠️ 架构上可用（纯 Node 实现；文件名净化已兼容 Windows 非法字符，路径跟随平台分隔符），未实测 |
 
 ## 其他说明
 
