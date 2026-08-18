@@ -7,7 +7,7 @@
 **One upload button + drag-and-drop files straight into the conversation** — a DeepSeek
 Harness (DSH) web plugin.
 
-Click the **📎 upload** button next to the composer (or just drag any file into the window):
+Click the **upload icon** button next to the composer (or just drag any file into the window):
 the file is saved to the current project's `uploads/` directory and the absolute path is
 inserted into the input box as `[上传文件] /path/to/uploads/xxx.png`. Press send and the
 model — or any attached vision tool — reads the file by path.
@@ -21,14 +21,15 @@ rejection because no image block is ever submitted.
 
 ![dsh-file-upload in action](assets/screenshot.png)
 
-The 📎 upload button in the composer tool row; the picked file's path (blurred in the
+The upload icon button in the composer tool row (official DSH design tokens, follows
+dark/light theme); the picked file's path (blurred in the
 screenshot) is inserted into the input box automatically, ready to send.
 
 ## Features
 
 | Action | Effect |
 |---|---|
-| Click **📎 upload** | System file picker (multi-select) → save → path into the input box |
+| Click upload icon | System file picker (multi-select) → save → path into the input box |
 | Drag a file into the window | Images & any file type are taken over (no "unsupported" toast) → save → path into the input box |
 | Send the message | The model / vision tool reads the file by absolute path |
 | Switch sessions | Button follows the current session; files land in that session's project `uploads/` |
@@ -55,7 +56,7 @@ plus a **single entry** in `~/.dsh/cordis.patch.yml`, then restart.
 
 ## Usage
 
-1. Click **📎** and pick files, or drag files anywhere into the window.
+1. Click the upload icon and pick files, or drag files anywhere into the window.
 2. The input box gets `[上传文件] <absolute path>` lines (your existing draft text is kept).
 3. Press send; the model calls its vision tool on the path automatically.
 
@@ -79,7 +80,7 @@ plus a **single entry** in `~/.dsh/cordis.patch.yml`, then restart.
   and size, then writes the base64 payload to `<session cwd>/uploads/` with **pure Node**
   (`node:fs`, no system command dependency, cross-platform); the returned path is built via
   `node:path` and follows the platform separator.
-- **Client** (`lib/client.js`): registers the **📎 upload** button in the
+- **Client** (`lib/client.js`): registers the upload icon button in the
   `conversation.input.left` seat (visually distinct from the default "+" command button);
   a capture-phase document listener takes over file drags before the official InputBar's
   bubble-phase listener (which would reject images); `FileReader` reads base64, uploads it,
