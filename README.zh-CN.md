@@ -46,7 +46,7 @@ DSH 原生"拖图片"会被拦截（当前模型不支持图片，提示"当前�
 dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 ```
 
-装完重启 `dsh web`（可用 `scripts/restart-dsh-web.sh` 自动重启）。
+装完重启 `dsh web`。
 
 ### 方式二：手动挂载（本地开发，macOS 实测）
 
@@ -69,11 +69,7 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 
    > 单 entry 包名挂载即可，双 entry 会导致路由重复注册崩溃。
 
-3. 重启 `dsh web`：
-
-   ```bash
-   ./scripts/restart-dsh-web.sh
-   ```
+3. 重启 `dsh web`（host 改动生效）。
 
 ## 工作原理
 
@@ -103,4 +99,4 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 ## 其他说明
 
 - `uploads/` 目录只增不减，**不会自动清理**（不擅自删用户文件），需要时手动删除。
-- 修改插件后重启即可生效：`./scripts/restart-dsh-web.sh`。
+- 修改插件后重启 `dsh web` 即可生效。

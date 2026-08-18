@@ -81,7 +81,7 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 3. **旧副本遮蔽**：`~/.dsh/profiles/web/node_modules` 里如果残留旧拷贝（而非软链），
    会遮蔽源码改动。插件更新后请检查此处，确保指向源码的软链。
 4. **client 改动刷新页面即可**（bundle 动态读文件）；host 改动必须重启 `dsh web`
-   （可用 `scripts/restart-dsh-web.sh`，浏览器自动重连无需手动刷新）。
+   （浏览器自动重连无需手动刷新）。
 5. **消息里的裸绝对路径**：dsh-file-mentions 的"裸路径点击"功能曾与 React 冲突导致
    含路径的消息发送后对话框崩溃（2026-08-17 已在其仓库修复：跳过对话消息区）。
    如使用旧版 file-mentions，请升级到最新 main。

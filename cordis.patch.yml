@@ -1,6 +1,6 @@
 # dsh-file-upload：上传按钮 + 拖拽文件进对话（保存到项目 uploads/，路径文本进输入框）
 # 安装方式：软链到 ~/.dsh/profiles/web/node_modules/dsh-file-upload + 本文件追加 entry
-# 生效方式：重启 dsh web（scripts/restart-dsh-web.sh）
+# 生效方式：重启 dsh web
 - insert:
     - id: file-upload
       name: 'dsh-file-upload'

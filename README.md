@@ -45,7 +45,7 @@ screenshot) is inserted into the input box automatically, ready to send.
 dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 ```
 
-Restart `dsh web` (or use `scripts/restart-dsh-web.sh`). Requires pnpm on PATH
+Restart `dsh web`. Requires pnpm on PATH
 (`dsh plugin` forwards to pnpm).
 
 ### Manual mount (fallback, macOS-tested)
@@ -91,5 +91,3 @@ plus a **single entry** in `~/.dsh/cordis.patch.yml`, then restart.
 
 - The `uploads/` directory only grows; it is **never cleaned automatically** (we don't delete
   your files) — remove files manually when needed.
-- `scripts/restart-dsh-web.sh` restarts `dsh web` gracefully (kills the port listener, waits,
-  relaunches, health-checks); the browser auto-reconnects, no manual refresh needed.
