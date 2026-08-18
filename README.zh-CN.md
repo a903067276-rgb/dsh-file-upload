@@ -13,6 +13,7 @@
 **不绑定任何视觉插件**：消息里只有本地绝对路径。主模型或任何外挂视觉工具
 （如 dsh-vision 的 `view_image`、其他支持读本地路径的模型）都能按路径识别。
 
+*非官方项目：社区成员独立开发维护，非 DeepSeek 官方产品。*
 ## 效果截图
 
 ![dsh-file-upload 效果](assets/screenshot.png)

@@ -17,6 +17,7 @@ it works with dsh-vision's `view_image`, any other model/tool that can read loca
 no vision at all. It bypasses DSH's native "the current model does not support images"
 rejection because no image block is ever submitted.
 
+*Unofficial project: independently developed and maintained by a community member, not an official DeepSeek product.*
 ## Screenshot
 
 ![dsh-file-upload in action](assets/screenshot.png)
