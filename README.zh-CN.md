@@ -4,6 +4,8 @@
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
+[![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
+
 **统一上传按钮 + 拖拽文件直进对话** —— DeepSeek Harness（dsh）web 插件。
 
 *非官方项目：社区成员独立开发维护，非 DeepSeek 官方产品。*

@@ -4,6 +4,8 @@
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
+[![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
+
 **One upload button + drag-and-drop files straight into the conversation** — a plugin for DeepSeek Harness (`dsh`) web.
 
 *Unofficial project: independently developed and maintained by a community member, not an official DeepSeek product.*
