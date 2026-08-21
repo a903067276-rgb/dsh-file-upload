@@ -22,8 +22,9 @@ The upload icon button in the composer tool row (official DSH design tokens, fol
 |---|---|
 | Click upload icon | System file picker (multi-select) → smart routing → attachment rail and/or path text |
 | Drag a file into the window | Images & any file type are taken over (no "unsupported" toast) → smart routing |
+| Drag a folder into the window | Recursively reads the whole folder → rebuilds it under the attachment library with its original layout → only the folder path goes into the draft (contents not expanded) |
 | **Image** (PNG/JPEG/WebP/GIF) | ① archived to the **attachment directory** (by-day folders) ② added to the **official draft attachment rail** → sent with automatic DeepSeek Files API `file_id` (same image reuses the id; 7-day expiry auto-reuploads) |
-| **Any other file** | Archived to the library's `files/` subfolder, `[上传文件] <path>` text goes into the draft |
+| **Any other file** | Archived to the library's `files/` subfolder, `<prefix> <path>` text goes into the draft |
 | Model without image support | Image falls back to archive + path text (never sent as an image block, no 400) |
 
 - Single-file limit: **64 MB** (DeepSeek Files API hard limit; the local attachment store defaults to 20 MB — see *Large images* below)
@@ -35,6 +36,7 @@ The upload icon button in the composer tool row (official DSH design tokens, fol
 ![Settings card](assets/settings.png)
 
 - **Attachment directory** (`~/Documents/DSH/Attachments` default, `~` supported) — only used for image archives
+- **Path prefix** (`[上传文件]` default) — text prepended to paths in the draft; clear it to send bare paths
 - **Images via official attachment** (default on) — off = images follow the old path-text logic
 - **Archive images to the attachment directory** (default on) — off = official attachment only (saves disk; if the official channel is unavailable, the image is still force-archived)
 - Read-only display: current image size limit from the host
@@ -67,10 +69,11 @@ Manual mount (fallback): see [docs/install.md](docs/install.md) — symlink into
 
 ## Usage
 
-1. Click the upload icon and pick files (multi-select), or drag files anywhere into the window.
+1. Click the upload icon and pick files (multi-select), or drag files/folders anywhere into the window.
 2. **Images** (when the current model accepts images): archived to the attachment directory *and* shown in the official attachment rail — send, and the model sees the image (DeepSeek Files API `file_id`, auto-reused).
-3. **Images when the model does not accept images** (or you turned the official path off): archived to `images/`, then `[上传文件] <absolute path>` lines go into the draft — `[上传文件] /path/to/Attachments/images/xxx.png` — and your existing draft text is kept.
+3. **Images when the model does not accept images** (or you turned the official path off): archived to `images/`, then `<prefix> <absolute path>` lines go into the draft — e.g. `[上传文件] /path/to/Attachments/images/xxx.png` — and your existing draft text is kept.
 4. **Other files**: archived to `files/`, path text goes into the draft. Press send; the model reads the file by path.
+5. **Folders**: drag one in and it is rebuilt under the attachment library with its original layout; only the folder path (one line) goes into the draft.
 
 ## Platform support
 
@@ -95,8 +98,8 @@ Manual mount (fallback): see [docs/install.md](docs/install.md) — symlink into
 
 ## How it works
 
-- **Host** (`lib/index.js`): `POST /api/file-upload/save` — validates the session and size, writes the base64 payload to `<library>/images/<YYYY-MM-DD>/` (`mode=image`) or `<library>/files/<YYYY-MM-DD>/` (`mode=file`) with **pure Node**; `GET/POST /api/file-upload/config` reads/writes the settings (official `settings` service) and exposes the host image limit plus whether the current session's model accepts images (`llm.resolveModel` `inputModalities` — same source the adapter uses).
-- **Client** (`lib/client.js`): registers the upload icon in the `conversation.input.left` seat; capture-phase document listener takes over file drags; routing: supported image + official on + model supports + within host limit → archive + `conversation.createDraftImages` + `inputActions.addImages` (the official InputBar's own mechanism) → official attachment rail (no path text); anything else degrades to archive + path text; >64 MB is refused with a notice.
+- **Host** (`lib/index.js`): `POST /api/file-upload/save` — validates the session and size, writes the base64 payload to `<library>/images/<YYYY-MM-DD>/` (`mode=image`) or `<library>/files/<YYYY-MM-DD>/` (`mode=file`) with **pure Node**; `POST /api/file-upload/save-folder` — takes a relative-path + base64 list and rebuilds the tree under `<library>/files/<date>/<timestamp>-<folder>/` (each segment sanitized, `..` rejected to prevent traversal); `GET/POST /api/file-upload/config` reads/writes the settings (official `settings` service) and exposes the host image limit plus whether the current session's model accepts images (`llm.resolveModel` `inputModalities` — same source the adapter uses).
+- **Client** (`lib/client.js`): registers the upload icon in the `conversation.input.left` seat; capture-phase document listener takes over file drags and reads dragged folders via `webkitGetAsEntry`; routing: supported image + official on + model supports + within host limit → archive + `conversation.createDraftImages` + `inputActions.addImages` (the official InputBar's own mechanism) → official attachment rail (no path text); anything else degrades to archive + path text; >64 MB is refused with a notice.
 - **Error boundary**: a render crash degrades to a small "⚠ upload component error" chip instead of unmounting the whole composer.
 
 ## Notes
