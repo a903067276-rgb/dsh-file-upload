@@ -57,7 +57,7 @@ Manual mount (fallback): see [docs/install.md](docs/install.md) — symlink into
 
 ## Requirements
 
-- DSH web (run with `dsh web`)
+- DSH web >= 0.1.0-rc.7 (run with `dsh web`)
 - No extra shell needed: the host half is pure Node (`node:fs`), no system commands required on any platform.
 
 ## How it works

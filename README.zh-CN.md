@@ -60,7 +60,7 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 
 ## 环境要求
 
-- DSH web（`dsh web` 运行）
+- DSH web（≥ 0.1.0-rc.7）（`dsh web` 运行）
 - 无需额外 shell/命令：host 半为纯 Node 实现（`node:fs`），全平台无系统命令依赖
 
 ## 工作原理
