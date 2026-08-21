@@ -27,12 +27,12 @@ The upload icon button in the composer tool row (official DSH design tokens, fol
 | Model without image support | Image falls back to archive + path text (never sent as an image block, no 400) |
 
 - Single-file limit: **64 MB** (DeepSeek Files API hard limit; the local attachment store defaults to 20 MB — see *Large images* below)
-- Files land in the project `uploads/`; images are archived (by default) to `~/Documents/DSH/附件库/<YYYY-MM-DD>/` — configurable in Settings
+- Files land in the project `uploads/`; images are archived (by default) to `~/Documents/DSH/Attachments/<YYYY-MM-DD>/` — configurable in Settings
 - Button shows busy state while uploading; failures surface as Chinese notices
 
 ## Settings card
 
-- **Attachment directory** (`~/Documents/DSH/附件库` default, `~` supported) — only used for image archives
+- **Attachment directory** (`~/Documents/DSH/Attachments` default, `~` supported) — only used for image archives
 - **Images via official attachment** (default on) — off = images follow the old path-text logic
 - **Archive images to the attachment directory** (default on) — off = official attachment only (saves disk; if the official channel is unavailable, the image is still force-archived)
 - Read-only display: current image size limit from the host
