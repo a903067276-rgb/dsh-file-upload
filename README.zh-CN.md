@@ -23,11 +23,11 @@
 | 点上传图标 | 系统文件选择器（可多选）→ 智能分流 → 附件条和/或路径文本 |
 | 把文件拖进窗口 | 图片/任意文件都接管（不再弹"不支持"）→ 智能分流 |
 | **图片**（PNG/JPEG/WebP/GIF） | ① 留档到**附件目录**（按天分文件夹）② 进**官方草稿附件条** → 发送后自动 DeepSeek Files API `file_id`（同图复用，7 天过期自动重传） |
-| **其他文件** | 存项目 `uploads/`，`[上传文件] 路径` 文本进草稿（行为不变） |
+| **其他文件** | 存附件库 `files/` 子目录，`[上传文件] 路径` 文本进草稿 |
 | 模型不支持图片 | 图片降级为"留档 + 路径文本"（绝不发送图片块，不报 400） |
 
 - 文件上限：单文件 **64MB**（DeepSeek Files API 硬限；主程序附件库默认 20MB，见 *大图（20~64MB）*）
-- 其他文件落项目 `uploads/`；图片默认留档到 `~/Documents/DSH/Attachments/<YYYY-MM-DD>/`（设置里可改）
+- 所有上传统一进**附件库**：图片 `~/Documents/DSH/Attachments/images/<YYYY-MM-DD>/`，其他文件 `.../files/<YYYY-MM-DD>/`（设置里可改根目录）
 - 上传中按钮变灰，失败有中文提示
 
 ## 设置卡片
@@ -67,8 +67,8 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 
 1. 点上传图标选文件（可多选），或把文件拖进窗口任意位置。
 2. **图片**（当前模型支持看图时）：留档附件目录 + 进入官方附件条——发送即模型看图（DeepSeek Files API `file_id`，自动复用）。
-3. **图片但模型不支持**（或你关了官方路径）：留档后写入 `[上传文件] <绝对路径>` 行——如 `[上传文件] /path/to/uploads/xxx.png`——保留已有草稿。
-4. **其他文件**：存当前项目 `uploads/`，路径文本进草稿；发送后模型按路径读取。
+3. **图片但模型不支持**（或你关了官方路径）：留档到 `images/` 后写入 `[上传文件] <绝对路径>` 行——如 `[上传文件] /path/to/Attachments/images/xxx.png`——保留已有草稿。
+4. **其他文件**：存附件库 `files/`，路径文本进草稿；发送后模型按路径读取。
 
 ## 平台支持
 
@@ -85,13 +85,13 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 
 ## 工作原理
 
-- **Host**（`lib/index.js`）：`POST /api/file-upload/save`——校验会话与大小，用**纯 Node** 写 base64 到 `<附件目录>/<YYYY-MM-DD>/`（`mode=image`）或 `<会话 cwd>/uploads/`（`mode=file`）；`GET/POST /api/file-upload/config`——读写设置（官方 settings 服务）+ 暴露宿主图片上限 + 当前会话模型是否收图（`llm.resolveModel` 的 `inputModalities`，与适配器同源）。
+- **Host**（`lib/index.js`）：`POST /api/file-upload/save`——校验会话与大小，用**纯 Node** 写 base64 到 `<附件库>/images/<YYYY-MM-DD>/`（`mode=image`）或 `<附件库>/files/<YYYY-MM-DD>/`（`mode=file`）；`GET/POST /api/file-upload/config`——读写设置（官方 settings 服务）+ 暴露宿主图片上限 + 当前会话模型是否收图（`llm.resolveModel` 的 `inputModalities`，与适配器同源）。
 - **Client**（`lib/client.js`）：上传图标挂 `conversation.input.left`；捕获阶段接管拖拽；分流规则：支持图片 + 开关开 + 模型收图 + 不超宿主上限 → 留档 + `conversation.createDraftImages` + `inputActions.addImages`（官方 InputBar 同款机制）→ 官方附件条（不写路径文本）；其余降级"留档 + 路径文本"；>64MB 拒绝并提示。
 - **错误边界**：渲染崩溃降级为"⚠ 上传组件异常"小图标，不卸载整个输入框。
 
 ## 备注
 
-- 附件目录与 `uploads/` 只增不减，**从不自动清理**（我们不删你的文件）——需要时手动清理。
+- 附件库只增不减，**从不自动清理**（我们不删你的文件）——需要时手动清理。
 - 改插件后重启 `dsh web` 生效（client 改动刷新页面即生效；host 改动需重启）。
 
 ## 为什么有这个插件
