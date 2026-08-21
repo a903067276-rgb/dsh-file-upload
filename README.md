@@ -32,6 +32,8 @@ The upload icon button in the composer tool row (official DSH design tokens, fol
 
 ## Settings card
 
+![Settings card](assets/settings.png)
+
 - **Attachment directory** (`~/Documents/DSH/Attachments` default, `~` supported) — only used for image archives
 - **Images via official attachment** (default on) — off = images follow the old path-text logic
 - **Archive images to the attachment directory** (default on) — off = official attachment only (saves disk; if the official channel is unavailable, the image is still force-archived)
