@@ -1,6 +1,6 @@
 {
   "name": "dsh-file-upload",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Upload button + drag-and-drop files into DSH conversation as local paths (works with any vision plugin)",
   "type": "module",
   "main": "lib/index.js",

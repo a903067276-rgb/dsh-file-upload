@@ -47,7 +47,7 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 
 ## 验证是否装好
 
-- 浏览器刷新后，输入框工具行出现「📎 上传」按钮（与默认「+」命令按钮并列）；
+- 浏览器刷新后，输入框工具行出现「上传图标」按钮（与默认「+」命令按钮并列）；
 - `curl -X POST http://127.0.0.1:3080/api/file-upload/save -H 'content-type: application/json' -d '{}'`
   返回 `{"ok":false,"error":"参数不完整"}`（路由存在）；
 - 点按钮选一张图 → 项目 `uploads/` 出现 `时间戳-原名` 文件，输入框出现
