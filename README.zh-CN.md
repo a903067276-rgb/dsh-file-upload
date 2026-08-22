@@ -90,8 +90,8 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 
 | 你的 DSH 版本 | 装这个 | 说明 |
 |---|---|---|
-| 0.1.1-rc.1 及以上 | `main`（v0.1.4+） | 全功能（含官方附件条） |
-| 0.1.0-rc.7 – 0.1.0-rc.8 | `main`（v0.1.4+） | 正常；官方附件条自动降级为路径文本（除非会话模型收图） |
+| 0.1.1-rc.1 及以上 | `main`（v0.1.5+） | 全功能（含官方附件条） |
+| 0.1.0-rc.7 – 0.1.0-rc.8 | `main`（v0.1.5+） | 正常；官方附件条自动降级为路径文本（除非会话模型收图） |
 | 0.1.0-rc.6 及更早 | `v0.1.2` — `dsh plugin add github:a903067276-rgb/dsh-file-upload#v0.1.2` | 最后一个无设置卡片的版本（设置卡片用 rc.7+ keyed slot 契约） |
 
 - 无需额外 shell：host 半纯 Node（`node:fs`），任何平台不依赖系统命令。
