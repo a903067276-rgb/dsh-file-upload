@@ -22,8 +22,9 @@
 |---|---|
 | 点上传图标 | 系统文件选择器（可多选）→ 智能分流 → 附件条和/或路径文本 |
 | 把文件拖进窗口 | 图片/任意文件都接管（不再弹"不支持"）→ 智能分流 |
+| 把文件夹拖进窗口 | 递归读取整个文件夹 → 在附件库中按原结构重建 → 只插文件夹路径一行（不展开内部文件） |
 | **图片**（PNG/JPEG/WebP/GIF） | ① 留档到**附件目录**（按天分文件夹）② 进**官方草稿附件条** → 发送后自动 DeepSeek Files API `file_id`（同图复用，7 天过期自动重传） |
-| **其他文件** | 存附件库 `files/` 子目录，`[上传文件] 路径` 文本进草稿 |
+| **其他文件** | 存附件库 `files/` 子目录，`<前缀> 路径` 文本进草稿 |
 | 模型不支持图片 | 图片降级为"留档 + 路径文本"（绝不发送图片块，不报 400） |
 
 - 文件上限：单文件 **64MB**（DeepSeek Files API 硬限；主程序附件库默认 20MB，见 *大图（20~64MB）*）
@@ -35,6 +36,7 @@
 ![设置卡片](assets/settings.png)
 
 - **附件目录**（默认 `~/Documents/DSH/Attachments`，支持 `~` 前缀）—— 只给图片留档用
+- **路径前缀**（默认 `[上传文件]`）—— 插入输入框时加在路径前的文本，清空 = 裸路径
 - **图片走官方附件**（默认开）—— 关 = 图片走老路径文本逻辑
 - **留档图片到附件目录**（默认开）—— 关 = 只走官方附件（省磁盘；官方通道不可用时仍强制留档）
 - 只读显示：当前图片来源上限（来自宿主配置）
@@ -67,10 +69,11 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 
 ## 使用
 
-1. 点上传图标选文件（可多选），或把文件拖进窗口任意位置。
+1. 点上传图标选文件（可多选），或把文件/文件夹拖进窗口任意位置。
 2. **图片**（当前模型支持看图时）：留档附件目录 + 进入官方附件条——发送即模型看图（DeepSeek Files API `file_id`，自动复用）。
-3. **图片但模型不支持**（或你关了官方路径）：留档到 `images/` 后写入 `[上传文件] <绝对路径>` 行——如 `[上传文件] /path/to/Attachments/images/xxx.png`——保留已有草稿。
+3. **图片但模型不支持**（或你关了官方路径）：留档到 `images/` 后写入 `<前缀> <绝对路径>` 行——如 `[上传文件] /path/to/Attachments/images/xxx.png`——保留已有草稿。
 4. **其他文件**：存附件库 `files/`，路径文本进草稿；发送后模型按路径读取。
+5. **文件夹**：拖入后在附件库按原结构重建，只把文件夹路径（一行）写进草稿。
 
 ## 平台支持
 
@@ -95,8 +98,8 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 
 ## 工作原理
 
-- **Host**（`lib/index.js`）：`POST /api/file-upload/save`——校验会话与大小，用**纯 Node** 写 base64 到 `<附件库>/images/<YYYY-MM-DD>/`（`mode=image`）或 `<附件库>/files/<YYYY-MM-DD>/`（`mode=file`）；`GET/POST /api/file-upload/config`——读写设置（官方 settings 服务）+ 暴露宿主图片上限 + 当前会话模型是否收图（`llm.resolveModel` 的 `inputModalities`，与适配器同源）。
-- **Client**（`lib/client.js`）：上传图标挂 `conversation.input.left`；捕获阶段接管拖拽；分流规则：支持图片 + 开关开 + 模型收图 + 不超宿主上限 → 留档 + `conversation.createDraftImages` + `inputActions.addImages`（官方 InputBar 同款机制）→ 官方附件条（不写路径文本）；其余降级"留档 + 路径文本"；>64MB 拒绝并提示。
+- **Host**（`lib/index.js`）：`POST /api/file-upload/save`——校验会话与大小，用**纯 Node** 写 base64 到 `<附件库>/images/<YYYY-MM-DD>/`（`mode=image`）或 `<附件库>/files/<YYYY-MM-DD>/`（`mode=file`）；`POST /api/file-upload/save-folder`——接收相对路径 + base64 列表，在附件库 `files/<日期>/<时间戳>-<文件夹名>/` 下按原结构重建（逐段 sanitize + 拒绝 `..` 防目录穿越）；`GET/POST /api/file-upload/config`——读写设置（官方 settings 服务）+ 暴露宿主图片上限 + 当前会话模型是否收图（`llm.resolveModel` 的 `inputModalities`，与适配器同源）。
+- **Client**（`lib/client.js`）：上传图标挂 `conversation.input.left`；捕获阶段接管拖拽，`webkitGetAsEntry` 递归读入文件夹目录树；分流规则：支持图片 + 开关开 + 模型收图 + 不超宿主上限 → 留档 + `conversation.createDraftImages` + `inputActions.addImages`（官方 InputBar 同款机制）→ 官方附件条（不写路径文本）；其余降级"留档 + 路径文本"；>64MB 拒绝并提示。
 - **错误边界**：渲染崩溃降级为"⚠ 上传组件异常"小图标，不卸载整个输入框。
 
 ## 备注
