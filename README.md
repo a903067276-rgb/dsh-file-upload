@@ -86,12 +86,13 @@ Manual mount (fallback): see [docs/install.md](docs/install.md) — symlink into
 ## Requirements
 
 - DSH web >= 0.1.0-rc.7 (run with `dsh web`)
-- **Version compatibility**:
+- **Version compatibility** (best effort — new features verified locally on 0.1.1-rc.2; on 0.1.0-rc.7/rc.8 the official image rail can't be fully checked, **not guaranteed**):
+- **Maintenance policy**: this plugin keeps evolving with the latest DSH releases; compatibility with older DSH versions is best-effort only and not guaranteed going forward.
 
 | Your DSH version | Install this | Note |
 |---|---|---|
 | 0.1.1-rc.1 and newer | `main` (v0.1.5+) | Full features (including the official image rail) |
-| 0.1.0-rc.7 – 0.1.0-rc.8 | `main` (v0.1.5+) | Works fine; the official image rail auto-degrades to path text unless the session model accepts images |
+| 0.1.0-rc.7 – 0.1.0-rc.8 | `main` (v0.1.5+) | Works fine; the official image rail auto-degrades to path text unless the session model accepts images. Conservative fallback: `v0.1.4` — `dsh plugin add github:a903067276-rgb/dsh-file-upload#v0.1.4` |
 | 0.1.0-rc.6 and older | `v0.1.2` — `dsh plugin add github:a903067276-rgb/dsh-file-upload#v0.1.2` | Last release without the settings card (the card uses the rc.7+ keyed slot contract) |
 
 - No extra shell needed: the host half is pure Node (`node:fs`), no system commands required on any platform.
