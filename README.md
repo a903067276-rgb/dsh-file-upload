@@ -39,6 +39,7 @@ The upload icon button in the composer tool row (official DSH design tokens, fol
 - **Path prefix** (`[上传文件]` default) — text prepended to paths in the draft; clear it to send bare paths
 - **Images via official attachment** (default on) — off = images follow the old path-text logic
 - **Archive images to the attachment directory** (default on) — off = official attachment only (saves disk; if the official channel is unavailable, the image is still force-archived)
+- **Allow public uploads** (default off) — off = same-origin check keeps allowing localhost only (CSRF-safe); on = any origin may upload, for public/port-forwarding access (e.g. ddnsto). Enable only if you trust everyone who can reach your DSH.
 - Read-only display: current image size limit from the host
 
 ## Large images (20–64 MB)
