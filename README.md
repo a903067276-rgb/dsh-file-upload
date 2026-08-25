@@ -40,7 +40,7 @@ The upload icon button in the composer tool row (official DSH design tokens, fol
 - **Images via official attachment** (default on) — off = images follow the old path-text logic
 - **Archive images to the attachment directory** (default on) — off = official attachment only (saves disk; if the official channel is unavailable, the image is still force-archived)
 - **Allow public uploads** (default off) — off = same-origin check keeps allowing localhost only (CSRF-safe); on = any origin may upload, for public/port-forwarding access (e.g. ddnsto). Enable only if you trust everyone who can reach your DSH.
-- **Clipboard listener** (default *images only*; options: off / images only / all files) — paste interception mode. Off = official built-in paste; images only = the plugin takes over pasted screenshots/images (works even when the model has no vision support — falls back to path text); all files = any pasted file is handled (archived to the library + path text in the draft). Changing the mode takes effect immediately after saving, no page reload.
+- **Clipboard listener** (default *off*, keeping official built-in paste; options: off / images only / all files) — paste interception mode. Off = official built-in paste; images only = the plugin takes over pasted screenshots/images (works even when the model has no vision support — falls back to path text); all files = any pasted file is handled (archived to the library + path text in the draft). Changing the mode takes effect immediately after saving, no page reload.
 - Read-only display: current image size limit from the host
 
 ## Large images (20–64 MB)
