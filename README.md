@@ -88,12 +88,12 @@ Manual mount (fallback): see [docs/install.md](docs/install.md) — symlink into
 ## Requirements
 
 - DSH web >= 0.1.0-rc.7 (run with `dsh web`)
-- **Version compatibility** (best effort — new features verified locally on 0.1.1-rc.2; on 0.1.0-rc.7/rc.8 the official image rail can't be fully checked, **not guaranteed**):
+- **Version compatibility** (best effort — verified locally on 0.1.2-alpha.2 and 0.1.1-rc.2; on 0.1.0-rc.7/rc.8 the official image rail can't be fully checked, **not guaranteed**):
 - **Maintenance policy**: this plugin keeps evolving with the latest DSH releases; compatibility with older DSH versions is best-effort only and not guaranteed going forward.
 
 | Your DSH version | Install this | Note |
 |---|---|---|
-| 0.1.1-rc.1 and newer | `main` (v0.1.5+) | Full features (including the official image rail) |
+| 0.1.1-rc.1 and newer (incl. 0.1.2) | `main` (v0.1.5+) | Full features (including the official image rail) |
 | 0.1.0-rc.7 – 0.1.0-rc.8 | `main` (v0.1.5+) | Works fine; the official image rail auto-degrades to path text unless the session model accepts images. Conservative fallback: `v0.1.4` — `dsh plugin add github:a903067276-rgb/dsh-file-upload#v0.1.4` |
 | 0.1.0-rc.6 and older | `v0.1.2` — `dsh plugin add github:a903067276-rgb/dsh-file-upload#v0.1.2` | Last release without the settings card (the card uses the rc.7+ keyed slot contract) |
 
@@ -101,7 +101,7 @@ Manual mount (fallback): see [docs/install.md](docs/install.md) — symlink into
 
 ## How it works
 
-- **Host** (`lib/index.js`): `POST /api/file-upload/save` — validates the session and size, writes the base64 payload to `<library>/images/<YYYY-MM-DD>/` (`mode=image`) or `<library>/files/<YYYY-MM-DD>/` (`mode=file`) with **pure Node**; `POST /api/file-upload/save-folder` — takes a relative-path + base64 list and rebuilds the tree under `<library>/files/<date>/<timestamp>-<folder>/` (each segment sanitized, `..` rejected to prevent traversal); `GET/POST /api/file-upload/config` reads/writes the settings (official `settings` service) and exposes the host image limit plus whether the current session's model accepts images (`llm.resolveModel` `inputModalities` — same source the adapter uses).
+- **Host** (`lib/index.js`): `POST /api/file-upload/save` — validates the session and size, writes the base64 payload to `<library>/images/<YYYY-MM-DD>/` (`mode=image`) or `<library>/files/<YYYY-MM-DD>/` (`mode=file`) with **pure Node**; `POST /api/file-upload/save-folder` — takes a relative-path + base64 list and rebuilds the tree under `<library>/files/<date>/<timestamp>-<folder>/` (each segment sanitized, `..` rejected to prevent traversal); `GET/POST /api/file-upload/config` reads/writes the settings (official `settings` service) and exposes the host image limit plus whether the current session's model accepts images — resolved from the same model-route source the official UI uses (model-selection projection → request header → `agentDefaultModel`, with the legacy `apiProxy.sessions.models` fallback on older DSH releases).
 - **Client** (`lib/client.js`): registers the upload icon in the `conversation.input.left` seat; capture-phase document listener takes over file drags and reads dragged folders via `webkitGetAsEntry`; routing: supported image + official on + model supports + within host limit → archive + `conversation.createDraftImages` + `inputActions.addImages` (the official InputBar's own mechanism) → official attachment rail (no path text); anything else degrades to archive + path text; >64 MB is refused with a notice.
 - **Error boundary**: a render crash degrades to a small "⚠ upload component error" chip instead of unmounting the whole composer.
 

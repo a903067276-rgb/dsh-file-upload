@@ -88,12 +88,12 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 ## 依赖要求
 
 - DSH web >= 0.1.0-rc.7（`dsh web` 运行）
-- **版本对照**（尽力兼容——新功能已在本地 0.1.1-rc.2 实测；0.1.0-rc.7/rc.8 上的官方附件条无法完整验证，**不保证**）：
+- **版本对照**（尽力兼容——已在本地 0.1.2-alpha.2 与 0.1.1-rc.2 实测；0.1.0-rc.7/rc.8 上的官方附件条无法完整验证，**不保证**）：
 - **维护策略**：本插件将持续跟随 DSH 最新版本演进；对旧版 DSH 的兼容仅是尽力而为、不保证长期有效。
 
 | 你的 DSH 版本 | 装这个 | 说明 |
 |---|---|---|
-| 0.1.1-rc.1 及以上 | `main`（v0.1.5+） | 全功能（含官方附件条） |
+| 0.1.1-rc.1 及以上（含 0.1.2） | `main`（v0.1.5+） | 全功能（含官方附件条） |
 | 0.1.0-rc.7 – 0.1.0-rc.8 | `main`（v0.1.5+） | 正常；官方附件条自动降级为路径文本（除非会话模型收图）。保守回退：`v0.1.4` — `dsh plugin add github:a903067276-rgb/dsh-file-upload#v0.1.4` |
 | 0.1.0-rc.6 及更早 | `v0.1.2` — `dsh plugin add github:a903067276-rgb/dsh-file-upload#v0.1.2` | 最后一个无设置卡片的版本（设置卡片用 rc.7+ keyed slot 契约） |
 
@@ -101,7 +101,7 @@ dsh plugin --profile web add "github:a903067276-rgb/dsh-file-upload#main"
 
 ## 工作原理
 
-- **Host**（`lib/index.js`）：`POST /api/file-upload/save`——校验会话与大小，用**纯 Node** 写 base64 到 `<附件库>/images/<YYYY-MM-DD>/`（`mode=image`）或 `<附件库>/files/<YYYY-MM-DD>/`（`mode=file`）；`POST /api/file-upload/save-folder`——接收相对路径 + base64 列表，在附件库 `files/<日期>/<时间戳>-<文件夹名>/` 下按原结构重建（逐段 sanitize + 拒绝 `..` 防目录穿越）；`GET/POST /api/file-upload/config`——读写设置（官方 settings 服务）+ 暴露宿主图片上限 + 当前会话模型是否收图（`llm.resolveModel` 的 `inputModalities`，与适配器同源）。
+- **Host**（`lib/index.js`）：`POST /api/file-upload/save`——校验会话与大小，用**纯 Node** 写 base64 到 `<附件库>/images/<YYYY-MM-DD>/`（`mode=image`）或 `<附件库>/files/<YYYY-MM-DD>/`（`mode=file`）；`POST /api/file-upload/save-folder`——接收相对路径 + base64 列表，在附件库 `files/<日期>/<时间戳>-<文件夹名>/` 下按原结构重建（逐段 sanitize + 拒绝 `..` 防目录穿越）；`GET/POST /api/file-upload/config`——读写设置（官方 settings 服务）+ 暴露宿主图片上限 + 当前会话模型是否收图——取自与官方 UI 同源的模型路由（模型选择投影 → 会话请求头 → `agentDefaultModel`，旧版 DSH 回退旧契约 `apiProxy.sessions.models`）。
 - **Client**（`lib/client.js`）：上传图标挂 `conversation.input.left`；捕获阶段接管拖拽，`webkitGetAsEntry` 递归读入文件夹目录树；分流规则：支持图片 + 开关开 + 模型收图 + 不超宿主上限 → 留档 + `conversation.createDraftImages` + `inputActions.addImages`（官方 InputBar 同款机制）→ 官方附件条（不写路径文本）；其余降级"留档 + 路径文本"；>64MB 拒绝并提示。
 - **错误边界**：渲染崩溃降级为"⚠ 上传组件异常"小图标，不卸载整个输入框。
 
