@@ -10,6 +10,14 @@
 
 *Unofficial project: independently developed and maintained by a community member, not an official DeepSeek product.*
 
+> ## ⚠️ DISCONTINUED (2026-09-10)
+>
+> **dsh 0.1.5-rc.1 ships a built-in attachment system that covers this plugin's core capability** (attach any file type; the model reads it on demand through its saved read-only path). This plugin is **no longer maintained**.
+>
+> - **Highest supported DSH version: 0.1.2** (last verified on 0.1.2-rc.1). No further fixes or compatibility work.
+> - **Upgrading to dsh 0.1.5 or newer? You MUST disable/remove this plugin first** — together with 0.1.5's attachment system it breaks the boot (the web app fails to start). Remove `dsh-file-upload` from `dsh.profile.bundles` in your profile's `package.json` before upgrading.
+> - Thanks to everyone who used it. For file attachments, use the official feature (drag or paste files into the composer).
+
 ## Screenshot
 
 ![dsh-file-upload in action](assets/screenshot.png)
@@ -88,12 +96,13 @@ Manual mount (fallback): see [docs/install.md](docs/install.md) — symlink into
 ## Requirements
 
 - DSH web >= 0.1.0-rc.7 (run with `dsh web`)
-- **Version compatibility** (best effort — verified locally on 0.1.2-alpha.2 and 0.1.1-rc.2; on 0.1.0-rc.7/rc.8 the official image rail can't be fully checked, **not guaranteed**):
-- **Maintenance policy**: this plugin keeps evolving with the latest DSH releases; compatibility with older DSH versions is best-effort only and not guaranteed going forward.
+- **Version compatibility** (best effort — verified locally on 0.1.2-alpha.2 / 0.1.2-rc.1 and 0.1.1-rc.2; on 0.1.0-rc.7/rc.8 the official image rail can't be fully checked, **not guaranteed**):
+- **Maintenance policy: DISCONTINUED (2026-09-10)** — superseded by the official attachment system shipped in dsh 0.1.5-rc.1. **Highest supported DSH version: 0.1.2.** No further updates.
 
 | Your DSH version | Install this | Note |
 |---|---|---|
-| 0.1.1-rc.1 and newer (incl. 0.1.2) | `main` (v0.1.5+) | Full features (including the official image rail) |
+| **0.1.5 and newer** | ⛔ **do not install** | Replaced by the official attachment system; this plugin breaks the boot — **disable/remove it before upgrading** |
+| 0.1.1-rc.1 – 0.1.2 | `main` (v0.1.5+) | Last supported range (full features, including the official image rail) |
 | 0.1.0-rc.7 – 0.1.0-rc.8 | `main` (v0.1.5+) | Works fine; the official image rail auto-degrades to path text unless the session model accepts images. Conservative fallback: `v0.1.4` — `dsh plugin add github:a903067276-rgb/dsh-file-upload#v0.1.4` |
 | 0.1.0-rc.6 and older | `v0.1.2` — `dsh plugin add github:a903067276-rgb/dsh-file-upload#v0.1.2` | Last release without the settings card (the card uses the rc.7+ keyed slot contract) |
 
