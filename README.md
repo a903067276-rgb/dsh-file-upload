@@ -4,6 +4,10 @@
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
+> ⚠️ **Name collision**: the npm package `dsh-file-upload` (0.5.4, by clion02) is a **different, unrelated plugin**. This one ships from GitHub only.
+>
+> ⚠️ **同名包提示**：npm 上的 `dsh-file-upload`（0.5.4，作者 clion02）**是另一个插件，不是本项目**。本项目只从 GitHub 安装。
+
 [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
 
 **One upload button + drag-and-drop files straight into the conversation** — a plugin for DeepSeek Harness (`dsh`) web.
